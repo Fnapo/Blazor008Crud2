@@ -1,0 +1,86 @@
+﻿@page "/clientes/create"
+@using Microsoft.EntityFrameworkCore
+@using B007Clases.Models
+@inject B007Clases.Data.B007CrudContext B007CrudContext;
+@inject NavigationManager NavigationManager
+
+<PageTitle>Create</PageTitle>
+
+<h1>Create</h1>
+
+<h2>Cliente</h2>
+<hr />
+<div class="row">
+	<div class="col-md-8">
+		<EditForm method="post" Model="Cliente" OnValidSubmit="AddCliente" FormName="create" class="was-validated" Enhance>
+			<DataAnnotationsValidator />
+			<!---<ValidationSummary class="text-danger" role="alert"/>-->
+			<div class="mb-3">
+				<label for="nombre" class="form-label col-12">Nombre:</label>
+				<InputText id="nombre" @bind-Value="Cliente.Nombre" class="form-control" aria-required="true" />
+				<ValidationMessage For="() => Cliente.Nombre" class="text-danger" />
+			</div>
+			<div class="mb-3">
+				<label for="apellidos" class="form-label col-12">Apellidos:</label>
+				<InputText id="apellidos" @bind-Value="Cliente.Apellidos" class="form-control" aria-required="true" />
+				<ValidationMessage For="() => Cliente.Apellidos" class="text-danger" />
+			</div>
+			<div class="mb-3">
+				<label for="email" class="form-label col-12">Email:</label>
+				<InputText id="email" @bind-Value="Cliente.Email" class="form-control" aria-required="true" />
+				<ValidationMessage For="() => Cliente.Email" class="text-danger" />
+			</div>
+			<div class="mb-3">
+				<label for="telefono" class="form-label col-12">Telefono:</label>
+				<InputText id="telefono" @bind-Value="Cliente.Telefono" class="form-control" aria-required="true" />
+				<ValidationMessage For="() => Cliente.Telefono" class="text-danger" />
+			</div>
+			<!--
+			<div class="mb-3">
+				<label for="fechaalta" class="form-label">FechaAlta:</label>
+				<InputDate id="fechaalta" @bind-Value="Cliente.FechaAlta" class="form-control" />
+				<ValidationMessage For="() => Cliente.FechaAlta" class="text-danger" />
+			</div>
+			<div class="mb-3">
+				<label for="creado" class="form-label">Creado:</label>
+				<InputDate id="creado" @bind-Value="Cliente.Creado" class="form-control" />
+				<ValidationMessage For="() => Cliente.Creado" class="text-danger" />
+			</div>
+			<div class="mb-3">
+				<label for="modificado" class="form-label">Modificado:</label>
+				<InputDate id="modificado" @bind-Value="Cliente.Modificado" class="form-control" />
+				<ValidationMessage For="() => Cliente.Modificado" class="text-danger" />
+			</div>
+			-->
+			<div class="d-flex justify-content-around flex-wrap">
+				<button type="submit" class="btn btn-primary col-md-3 col-12 mb-3">Crear</button>
+				<button type="reset" class="btn btn-success col-md-3 col-12 mb-3">Resetear</button>
+				<a href="/clientes" class="btn btn-danger col-md-3 col-12 mb-3">Cancelar</a>
+			</div>
+		</EditForm>
+	</div>
+</div>
+
+<!--
+<div>
+	<a href="/clientes">Back to List</a>
+</div>
+-->
+
+@code {
+	[SupplyParameterFromForm]
+	private Cliente Cliente { get; set; } = new();
+
+	// To protect from overposting attacks, see https://learn.microsoft.com/aspnet/core/blazor/forms/#mitigate-overposting-attacks.
+	private async Task AddCliente()
+	{
+		B007CrudContext.Clientes.Add(Cliente);
+		await B007CrudContext.SaveChangesAsync();
+		NavigationManager.NavigateTo("/clientes");
+	}
+
+	private void Cancelar()
+	{
+		NavigationManager.NavigateTo("/clientes");
+	}
+}

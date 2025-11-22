@@ -1,0 +1,126 @@
+﻿@page "/clientes/edit"
+@using Microsoft.EntityFrameworkCore
+@using B007Clases.Models
+@inject B007Clases.Data.B007CrudContext B007CrudContext;
+@inject NavigationManager NavigationManager
+
+<PageTitle>Edit</PageTitle>
+
+<h1>Edit</h1>
+
+<h2>Cliente</h2>
+<hr />
+@if (Cliente is null)
+{
+	<p><em>Loading...</em></p>
+}
+else
+{
+	<div class="row">
+		<div class="col-md-8">
+			<EditForm method="post" Model="Cliente" OnValidSubmit="UpdateCliente" FormName="edit" Enhance>
+				<DataAnnotationsValidator />
+				<ValidationSummary role="alert" />
+				<input type="hidden" name="Cliente.IdCliente" value="@Cliente.IdCliente" />
+				<div class="mb-3">
+					<label for="nombre" class="form-label col-12">Nombre:</label>
+					<InputText id="nombre" @bind-Value="Cliente.Nombre" class="form-control" aria-required="true" />
+					<ValidationMessage For="() => Cliente.Nombre" class="text-danger" />
+				</div>
+				<div class="mb-3">
+					<label for="apellidos" class="form-label col-12">Apellidos:</label>
+					<InputText id="apellidos" @bind-Value="Cliente.Apellidos" class="form-control" aria-required="true" />
+					<ValidationMessage For="() => Cliente.Apellidos" class="text-danger" />
+				</div>
+				<div class="mb-3">
+					<label for="email" class="form-label col-12">Email:</label>
+					<InputText id="email" @bind-Value="Cliente.Email" class="form-control" aria-required="true" />
+					<ValidationMessage For="() => Cliente.Email" class="text-danger" />
+				</div>
+				<div class="mb-3">
+					<label for="telefono" class="form-label col-12">Telefono:</label>
+					<InputText id="telefono" @bind-Value="Cliente.Telefono" class="form-control" aria-required="true" />
+					<ValidationMessage For="() => Cliente.Telefono" class="text-danger" />
+				</div>
+				<div class="visually-hidden">
+					<div class="mb-3">
+						<label for="fechaalta" class="form-label">FechaAlta:</label>
+						<InputDate id="fechaalta" @bind-Value="Cliente.FechaAlta" class="form-control" />
+						<ValidationMessage For="() => Cliente.FechaAlta" class="text-danger" />
+					</div>
+					<div class="mb-3">
+						<label for="creado" class="form-label">Creado:</label>
+						<InputDate id="creado" @bind-Value="Cliente.Creado" class="form-control" />
+						<ValidationMessage For="() => Cliente.Creado" class="text-danger" />
+					</div>
+					<div class="mb-3">
+						<label for="modificado" class="form-label">Modificado:</label>
+						<InputDate id="modificado" @bind-Value="Cliente.Modificado" class="form-control" />
+						<ValidationMessage For="() => Cliente.Modificado" class="text-danger" />
+					</div>
+				</div>
+				<div class="d-flex justify-content-around flex-wrap">
+					<button type="submit" class="btn btn-primary col-md-3 col-12 mb-3">Actualizar</button>
+					<button type="reset" class="btn btn-success col-md-3 col-12 mb-3">Resetear</button>
+					<a href="/clientes" class="btn btn-danger col-md-3 col-12 mb-3">Cancelar</a>
+				</div>
+				<!--
+				<button type="submit" class="btn btn-primary">Save</button>
+				-->
+			</EditForm>
+		</div>
+	</div>
+}
+<!--
+<div>
+	<a href="/clientes">Back to List</a>
+</div>
+-->
+@code {
+	[SupplyParameterFromQuery]
+	private long IdCliente { get; set; }
+
+	[SupplyParameterFromForm]
+	private Cliente? Cliente { get; set; }
+
+	protected override async Task OnInitializedAsync()
+	{
+		Cliente ??= await B007CrudContext.Clientes.FirstOrDefaultAsync(m => m.IdCliente == IdCliente);
+
+		if (Cliente is null)
+		{
+			NavigationManager.NavigateTo("notfound");
+		}
+	}
+
+	// To protect from overposting attacks, enable the specific properties you want to bind to.
+	// For more information, see https://learn.microsoft.com/aspnet/core/blazor/forms/#mitigate-overposting-attacks.
+	private async Task UpdateCliente()
+	{
+		B007CrudContext.Attach(Cliente!).State = EntityState.Modified;
+
+		try
+		{
+			Cliente!.Modificado = DateTime.Now;
+			await B007CrudContext.SaveChangesAsync();
+		}
+		catch (DbUpdateConcurrencyException)
+		{
+			if (!ClienteExists(Cliente!.IdCliente))
+			{
+				NavigationManager.NavigateTo("notfound");
+			}
+			else
+			{
+				throw;
+			}
+		}
+
+		NavigationManager.NavigateTo("/clientes");
+	}
+
+	private bool ClienteExists(long idcliente)
+	{
+		return B007CrudContext.Clientes.Any(e => e.IdCliente == idcliente);
+	}
+}

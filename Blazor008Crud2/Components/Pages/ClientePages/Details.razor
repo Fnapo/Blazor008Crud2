@@ -1,0 +1,59 @@
+﻿@page "/clientes/details"
+@using Microsoft.EntityFrameworkCore
+@using B007Clases.Models
+@inject B007Clases.Data.B007CrudContext B007CrudContext;
+@inject NavigationManager NavigationManager
+
+<PageTitle>Details</PageTitle>
+
+<h1>Details</h1>
+
+<div>
+    <h2>Cliente</h2>
+    <hr />
+    @if (cliente is null)
+    {
+        <p><em>Loading...</em></p>
+    }
+    else {
+        <dl class="col-md-8 col-12">
+            <dt class="col-sm-2">Nombre</dt>
+            <dd class="col-sm-10">@cliente.Nombre</dd>
+            <dt class="col-sm-2">Apellidos</dt>
+            <dd class="col-sm-10">@cliente.Apellidos</dd>
+            <dt class="col-sm-2">Email</dt>
+            <dd class="col-sm-10">@cliente.Email</dd>
+            <dt class="col-sm-2">Telefono</dt>
+            <dd class="col-sm-10">@cliente.Telefono</dd>
+            <dt class="col-sm-2">FechaAlta</dt>
+            <dd class="col-sm-10">@cliente.FechaAlta</dd>
+            <!--
+            <dt class="col-sm-2">Creado</dt>
+            <dd class="col-sm-10">@cliente.Creado</dd>
+            <dt class="col-sm-2">Modificado</dt>
+            <dd class="col-sm-10">@cliente.Modificado</dd>
+            -->
+        </dl>
+        <div class="d-flex justify-content-around col-md-8 col-12">
+            <a href="@($"/clientes/edit?idcliente={cliente.IdCliente}")" class="btn btn-primary col-md-5 col-12 mb-3">Edit</a>
+            <a href="/clientes" class="btn btn-danger col-md-5 col-12 mb-3">Back to List</a>
+        </div>
+    }
+</div>
+
+@code {
+    private Cliente? cliente;
+
+    [SupplyParameterFromQuery]
+    private long IdCliente { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        cliente = await B007CrudContext.Clientes.FirstOrDefaultAsync(m => m.IdCliente == IdCliente);
+
+        if (cliente is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+}
